@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>RaceHub — Trouve ta prochaine ligne de départ en Tunisie</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="top-strip"></div>
+    <div id="navbar-root"></div>
+
+    <main>
+      <!-- HERO -->
+      <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+          <span class="hero-tag">Le calendrier officiel · Tunisie</span>
+          <h1>
+            Trouve ta <span class="accent">prochaine</span><br />
+            ligne de départ
+          </h1>
+          <p>
+            Trails, marathons, 10 km. Rejoins des milliers de coureurs et
+            découvre les meilleurs événements running en Tunisie.
+          </p>
+          <div class="hero-buttons">
+            <a href="/courses.html" class="btn btn-primary">Explorer les courses →</a>
+            <a href="/profile.html" class="btn btn-outline">Créer un événement</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- MARQUEE défilant -->
+      <div class="marquee">
+        <div class="marquee-track" id="marquee-track">Chargement…</div>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-bar" id="stats-bar"></div>
+
+      <!-- TENDANCE -->
+      <section id="trending-section" class="container" style="display:none">
+        <div class="section-header">
+          <h2 class="section-title">Tendance <span class="accent">actuelle</span></h2>
+        </div>
+        <div id="trending-event"></div>
+      </section>
+
+      <!-- PROCHAINES COURSES -->
+      <section class="container">
+        <div class="section-header">
+          <h2 class="section-title">Prochaines courses</h2>
+          <a href="/courses.html" class="btn btn-ghost">Voir tout →</a>
+        </div>
+        <div class="events-grid" id="upcoming-events">
+          <div class="spinner"></div>
+        </div>
+      </section>
+
+      <!-- TYPES DE COURSES -->
+      <section class="container">
+        <div class="section-header">
+          <h2 class="section-title">Tu cherches quel type de <span class="accent">défi</span> ?</h2>
+        </div>
+        <div class="race-types-grid" id="race-types-grid"></div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-logo">RACE<span class="accent">HUB</span></div>
+      <p>Le calendrier officiel des courses de running en Tunisie · </p>
+    </footer>
+
+    <div id="toast-root"></div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/navbar.js"></script>
+    <script src="/js/home.js"></script>
+  </body>
+</html>

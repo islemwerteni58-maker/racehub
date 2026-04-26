@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Runners — RaceHub</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="top-strip"></div>
+    <div id="navbar-root"></div>
+
+    <main>
+      <header class="page-header">
+        <div class="container">
+          <h1>La <span class="accent">communauté</span></h1>
+          <p>Découvrez les profils et les palmarès des runners</p>
+        </div>
+      </header>
+
+      <section class="container">
+        <div class="runners-grid" id="runners-grid">
+          <div class="spinner"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-logo">RACE<span class="accent">HUB</span></div>
+    </footer>
+
+    <!-- Modale runner -->
+    <div class="modal-backdrop" id="runner-modal">
+      <div class="modal" style="position:relative">
+        <button class="modal-close" onclick="closeRunnerModal()">×</button>
+        <div id="runner-modal-content"></div>
+      </div>
+    </div>
+
+    <div id="toast-root"></div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/navbar.js"></script>
+    <script src="/js/runners.js"></script>
+  </body>
+</html>

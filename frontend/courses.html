@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Toutes les courses — RaceHub Tunisie</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <div class="top-strip"></div>
+    <div id="navbar-root"></div>
+
+    <main>
+      <header class="page-header">
+        <div class="container">
+          <h1>Toutes les <span class="accent">courses</span></h1>
+          <p>Trouvez votre prochain défi parmi les événements running en Tunisie</p>
+          <div class="search-box">
+            <input id="search-input" type="text" placeholder="Rechercher une course, une ville…" />
+          </div>
+        </div>
+      </header>
+
+      <div class="container layout-with-sidebar">
+        <aside class="sidebar">
+          <h3>Filtres</h3>
+          <div id="race-type-filters">
+            <button class="filter-item active" data-id="">Tous les types</button>
+          </div>
+        </aside>
+
+        <div>
+          <div class="events-grid" id="events-list">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="footer-logo">RACE<span class="accent">HUB</span></div>
+      <p>Le calendrier officiel des courses de running en Tunisie</p>
+    </footer>
+
+    <div id="toast-root"></div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/navbar.js"></script>
+    <script src="/js/courses.js"></script>
+  </body>
+</html>

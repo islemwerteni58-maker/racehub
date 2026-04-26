@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Connexion — RaceHub</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/style.css" />
+    
+  </head>
+  <body>
+    <div class="top-strip"></div>
+
+    <div class="auth-page">
+      <!-- LEFT VISUAL -->
+      <div class="auth-left">
+        <a href="/" class="logo">RACE<span class="accent">HUB</span></a>
+        <div>
+          <h2>Trouve ta<br><span style="color:var(--orange)">prochaine</span><br>ligne de départ</h2>
+          <p>Trails, marathons, 10 km. Rejoins des milliers de coureurs.</p>
+        </div>
+      </div>
+
+      <!-- RIGHT FORM -->
+      <div class="auth-right">
+        <div class="auth-tabs">
+          <div class="auth-tab active" data-tab="login">Connexion</div>
+          <div class="auth-tab" data-tab="register">Créer un compte</div>
+        </div>
+
+        <!-- LOGIN -->
+        <div class="auth-form active" id="form-login">
+          <h3>Bon retour !</h3>
+          <p class="subtitle">Connectez-vous pour accéder à votre espace.</p>
+          <div class="auth-error" id="login-error"></div>
+          <div class="form-group">
+            <label>Adresse e-mail</label>
+            <input type="email" id="login-email" placeholder="vous@email.fr" autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label>Mot de passe</label>
+            <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
+          </div>
+          <button class="btn btn-primary" style="width:100%;margin-top:0.5rem" id="login-btn">
+            Se connecter →
+          </button>
+          <p style="text-align:center;margin-top:1.5rem;font-size:0.875rem;color:var(--grey-700)">
+            Pas encore de compte ?
+            <a href="#" style="color:var(--orange);font-weight:700" id="go-register">Créer un compte</a>
+          </p>
+        </div>
+
+        <!-- REGISTER -->
+        <div class="auth-form" id="form-register">
+          <h3>Créer un compte</h3>
+          <p class="subtitle">Rejoignez la communauté RaceHub.</p>
+          <div class="auth-error" id="register-error"></div>
+          <div class="auth-success" id="register-success"></div>
+
+          <p style="font-weight:700;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.75rem">
+            Je suis…
+          </p>
+          <div class="role-selector">
+            <div class="role-option selected" data-role="runner">
+              <div class="role-icon">🏃</div>
+              <div class="role-name">Runner</div>
+              <div class="role-desc">Je cours et m'inscris à des courses</div>
+            </div>
+            <div class="role-option" data-role="organizer">
+              <div class="role-icon">🏁</div>
+              <div class="role-name">Organisateur</div>
+              <div class="role-desc">Je crée et gère des événements</div>
+            </div>
+          </div>
+          <input type="hidden" id="register-role" value="runner" />
+
+          <div class="form-group">
+            <label>Nom complet</label>
+            <input type="text" id="register-name" placeholder="Prénom Nom" autocomplete="name" />
+          </div>
+          <div class="form-group">
+            <label>Adresse e-mail</label>
+            <input type="email" id="register-email" placeholder="vous@email.fr" autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label>Mot de passe</label>
+            <input type="password" id="register-password" placeholder="Min. 6 caractères" autocomplete="new-password" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Ville</label>
+              <input type="text" id="register-city" placeholder="Paris" />
+            </div>
+            <div class="form-group">
+              <label>Âge</label>
+              <input type="number" id="register-age" placeholder="25" min="10" max="100" />
+            </div>
+          </div>
+          <button class="btn btn-primary" style="width:100%;margin-top:0.5rem" id="register-btn">
+            Créer mon compte →
+          </button>
+          <p style="text-align:center;margin-top:1.5rem;font-size:0.875rem;color:var(--grey-700)">
+            Déjà un compte ?
+            <a href="#" style="color:var(--orange);font-weight:700" id="go-login">Se connecter</a>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Tab switching
+      const tabs = document.querySelectorAll('.auth-tab');
+      tabs.forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+      document.getElementById('go-register').addEventListener('click', e => { e.preventDefault(); switchTab('register'); });
+      document.getElementById('go-login').addEventListener('click', e => { e.preventDefault(); switchTab('login'); });
+
+      function switchTab(name) {
+        tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+        document.getElementById('form-login').classList.toggle('active', name === 'login');
+        document.getElementById('form-register').classList.toggle('active', name === 'register');
+      }
+
+      // Role selector
+      document.querySelectorAll('.role-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+          document.querySelectorAll('.role-option').forEach(o => o.classList.remove('selected'));
+          opt.classList.add('selected');
+          document.getElementById('register-role').value = opt.dataset.role;
+        });
+      });
+
+      // LOGIN
+      document.getElementById('login-btn').addEventListener('click', async () => {
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+        const errEl = document.getElementById('login-error');
+        errEl.classList.remove('show');
+        if (!email || !password) { showErr(errEl, 'Veuillez remplir tous les champs.'); return; }
+
+        try {
+          const r = await fetch('/api/auth/login', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          const data = await r.json();
+          if (!r.ok) { showErr(errEl, data.error || 'Identifiants incorrects.'); return; }
+          const redirect = new URLSearchParams(window.location.search).get('redirect') || '/profile.html';
+          window.location.href = redirect;
+        } catch {
+          showErr(errEl, 'Erreur de connexion au serveur.');
+        }
+      });
+
+      // REGISTER
+      document.getElementById('register-btn').addEventListener('click', async () => {
+        const name = document.getElementById('register-name').value.trim();
+        const email = document.getElementById('register-email').value.trim();
+        const password = document.getElementById('register-password').value;
+        const role = document.getElementById('register-role').value;
+        const city = document.getElementById('register-city').value.trim();
+        const age = document.getElementById('register-age').value;
+        const errEl = document.getElementById('register-error');
+        const okEl = document.getElementById('register-success');
+        errEl.classList.remove('show');
+        okEl.classList.remove('show');
+
+        if (!name || !email || !password) { showErr(errEl, 'Nom, e-mail et mot de passe sont requis.'); return; }
+        if (password.length < 6) { showErr(errEl, 'Le mot de passe doit faire au moins 6 caractères.'); return; }
+
+        try {
+          const r = await fetch('/api/auth/register', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password, role, city: city || null, age: age ? Number(age) : null, country: 'France' })
+          });
+          const data = await r.json();
+          if (!r.ok) { showErr(errEl, data.error || 'Erreur lors de la création.'); return; }
+          okEl.textContent = 'Compte créé ! Redirection…';
+          okEl.classList.add('show');
+          setTimeout(() => { window.location.href = '/profile.html'; }, 1000);
+        } catch {
+          showErr(errEl, 'Erreur de connexion au serveur.');
+        }
+      });
+
+      // Allow Enter key
+      ['login-email','login-password'].forEach(id => {
+        document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('login-btn').click(); });
+      });
+
+      function showErr(el, msg) { el.textContent = msg; el.classList.add('show'); }
+    </script>
+  </body>
+</html>
