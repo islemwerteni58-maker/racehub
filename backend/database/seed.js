@@ -43,7 +43,7 @@ async function seedUsers() {
     {
       name: "Sarra Ben Ali", email: "sarra.benali@racehub.tn", password: "Admin2026!",
       role: "admin",
-      photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=faces",
+      photo: "https://plus.unsplash.com/premium_photo-1732117941506-cd5f33e25a08?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       bio: "Administratrice de la plateforme RaceHub Tunisie.",
       city: "Tunis", country: "Tunisie", gender: "F", age: 34,
     },
@@ -51,7 +51,7 @@ async function seedUsers() {
     {
       name: "Karim Gharbi", email: "karim.gharbi@hippodiaritus.tn", password: "Org2026!",
       role: "organizer",
-      photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=faces",
+      photo: "https://images.unsplash.com/photo-1647535993927-bcf896be066b?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       bio: "Organisateur de courses depuis 8 ans, fondateur du Hippodiaritus Run.",
       city: "Bizerte", country: "Tunisie", gender: "M", age: 42,
     },
@@ -59,7 +59,7 @@ async function seedUsers() {
     {
       name: "Yasmine Trabelsi", email: "yasmine.trabelsi@ooredoo-run.tn", password: "Org2026!",
       role: "organizer",
-      photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=faces",
+      photo: "https://images.unsplash.com/photo-1683830190453-eccededd3ed2?q=80&w=715&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       bio: "Co-organisatrice du Ooredoo Night Run et du Comar Marathon.",
       city: "Tunis", country: "Tunisie", gender: "F", age: 37,
     },
@@ -67,7 +67,7 @@ async function seedUsers() {
     {
       name: "Mehdi Jouini", email: "mehdi.jouini@vaga-run.tn", password: "Org2026!",
       role: "organizer",
-      photo: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=faces",
+      photo: "https://images.unsplash.com/photo-1610362556225-eac73c6d235d?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       bio: "Passionné de trail et organisateur du Vaga Run et du Laarrousia Trail Festival.",
       city: "Béja", country: "Tunisie", gender: "M", age: 39,
     },
@@ -75,7 +75,7 @@ async function seedUsers() {
     {
       name: "Amine Khelifi", email: "amine.khelifi@gmail.com", password: "Runner2026!",
       role: "runner",
-      photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=faces",
+      photo: "https://images.unsplash.com/photo-1652784549134-bae822a7c4a3?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       bio: "Marathonien tunisien, 4 ans de compétition.",
       city: "Tunis", country: "Tunisie", gender: "M", age: 28,
     },
@@ -83,7 +83,7 @@ async function seedUsers() {
     {
       name: "Inès Chaabane", email: "ines.chaabane@gmail.com", password: "Runner2026!",
       role: "runner",
-      photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=faces",
+      photo: "https://images.unsplash.com/photo-1565292849963-a50ad3c5ddd5?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       bio: "Trail runner et coach sportive à Sfax.",
       city: "Sfax", country: "Tunisie", gender: "F", age: 31,
     },
@@ -91,7 +91,7 @@ async function seedUsers() {
     {
       name: "Youssef Belhaj", email: "youssef.belhaj@gmail.com", password: "Runner2026!",
       role: "runner",
-      photo: "https://images.unsplash.com/photo-1463453091185-61582044d556?w=400&h=400&fit=crop&crop=faces",
+      photo: "https://images.unsplash.com/photo-1647535993927-bcf896be066b?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       bio: "Coureur du dimanche devenu sérieux.",
       city: "Sousse", country: "Tunisie", gender: "M", age: 25,
     },
@@ -99,7 +99,7 @@ async function seedUsers() {
     {
       name: "Fatma Nasri", email: "fatma.nasri@gmail.com", password: "Runner2026!",
       role: "runner",
-      photo: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&h=400&fit=crop&crop=faces",
+      photo: "https://images.unsplash.com/photo-1765833468912-56ca0afa0c83?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       bio: "Spécialiste des courses sur route, première femme de sa région à finir un semi.",
       city: "Monastir", country: "Tunisie", gender: "F", age: 29,
     },
@@ -107,7 +107,7 @@ async function seedUsers() {
     {
       name: "Bilel Hamdi", email: "bilel.hamdi@gmail.com", password: "Runner2026!",
       role: "runner",
-      photo: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=400&h=400&fit=crop&crop=faces",
+      photo: "https://images.unsplash.com/photo-1712189142492-b9e40244a7d0?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       bio: "Trail addict, fan des sentiers de Béja et de la Kroumirie.",
       city: "Béja", country: "Tunisie", gender: "M", age: 33,
     },

@@ -41,7 +41,7 @@
 
   let inscriptionHtml;
   if (!session.user) {
-    inscriptionHtml = `<div class="alert">Sélectionnez un utilisateur de démo pour vous inscrire.</div>`;
+    inscriptionHtml = `<div class="alert">Connecter pour inscrire.</div>`;
   } else if (!isRunner) {
     inscriptionHtml = `<div class="alert">Seuls les runners peuvent s'inscrire.</div>`;
   } else if (isRegistered) {

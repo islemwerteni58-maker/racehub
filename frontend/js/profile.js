@@ -68,7 +68,7 @@
 })();
 
 // ============================================================
-// Vue RUNNER — matching the design screenshots
+// Vue RUNNER — 
 // ============================================================
 function renderRunner(detail) {
   const upcoming = detail.upcomingRegistrations || [];
