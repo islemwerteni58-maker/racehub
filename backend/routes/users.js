@@ -168,4 +168,28 @@ router.post("/users/:id/results", async (req, res) => {
   }
 });
 
+router.post("/users/:id/photo", async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const { photoDataUrl } = req.body || {};
+
+    if (!photoDataUrl || !photoDataUrl.startsWith("data:image/")) {
+      return res.status(400).json({ error: "Image invalide." });
+    }
+
+    // Limit payload size (~5 MB base64 ≈ 3.75 MB binary)
+    if (photoDataUrl.length > 7 * 1024 * 1024) {
+      return res.status(413).json({ error: "Image trop grande (max 5 Mo)." });
+    }
+
+    // Store the data URL directly in photo_url
+    await pool.query("UPDATE users SET photo_url = ? WHERE id = ?", [photoDataUrl, id]);
+
+    res.json({ photoUrl: photoDataUrl });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
+});
+
 module.exports = router;

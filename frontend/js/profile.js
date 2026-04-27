@@ -35,11 +35,16 @@
   let html = `
     <header class="profile-header">
       <div class="container">
-        <div class="profile-avatar-wrap">
+        <div class="profile-avatar-wrap" id="avatar-wrap" title="Changer la photo">
           ${u.photoUrl
-            ? `<img src="${u.photoUrl}" alt="" />`
-            : `<div class="profile-avatar-initials">${escapeHtml(initial)}</div>`
+            ? `<img src="${u.photoUrl}" alt="" id="avatar-img" />`
+            : `<div class="profile-avatar-initials" id="avatar-initials">${escapeHtml(initial)}</div>`
           }
+          <div class="profile-avatar-overlay">
+            
+            <span class="profile-avatar-overlay-text">Changer la photo</span>
+          </div>
+          <input type="file" class="profile-avatar-input" id="avatar-file-input" accept="image/*" />
         </div>
         <div>
           <span class="role-badge">${u.role}</span>
@@ -65,6 +70,9 @@
   if (u.role === "runner") bindRunnerEvents(u.id);
   if (u.role === "organizer") bindOrganizerEvents(u.id);
   if (u.role === "admin") bindAdminEvents();
+
+  // ── Avatar upload ──────────────────────────────────────────────────
+  bindAvatarUpload(u.id);
 })();
 
 // ============================================================
@@ -494,6 +502,90 @@ function openFormModal(title, bodyHtml, onSubmit) {
       showToast(err.message || "Erreur lors de l'envoi", "error");
       submitBtn.disabled = false;
       submitBtn.textContent = "Soumettre l'événement";
+    }
+  });
+}
+
+// ============================================================
+// Avatar upload
+// ============================================================
+function bindAvatarUpload(userId) {
+  const wrap = document.getElementById("avatar-wrap");
+  const fileInput = document.getElementById("avatar-file-input");
+  if (!wrap || !fileInput) return;
+
+  // Clicking the wrap triggers the hidden file input
+  wrap.addEventListener("click", () => fileInput.click());
+
+  fileInput.addEventListener("change", async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    // Validate type and size (max 5 MB)
+    if (!file.type.startsWith("image/")) {
+      showToast("Veuillez choisir une image.", "error");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      showToast("L'image ne doit pas dépasser 5 Mo.", "error");
+      return;
+    }
+
+    // Show spinner inside the avatar wrap
+    const spinner = document.createElement("div");
+    spinner.className = "avatar-upload-spinner";
+    spinner.innerHTML = '<div class="spinner"></div>';
+    wrap.appendChild(spinner);
+
+    try {
+      // Convert to base64
+      const base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result); // data:image/...;base64,...
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      // Send to server
+      const r = await fetch(`/api/users/${userId}/photo`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ photoDataUrl: base64 }),
+      });
+      if (!r.ok) throw new Error("Erreur serveur");
+      const data = await r.json();
+
+      // Update avatar in the DOM without full reload
+      const photoUrl = data.photoUrl;
+      const existingImg = document.getElementById("avatar-img");
+      const existingInitials = document.getElementById("avatar-initials");
+
+      if (existingImg) {
+        existingImg.src = photoUrl;
+      } else if (existingInitials) {
+        // Replace initials div with an img
+        const img = document.createElement("img");
+        img.src = photoUrl;
+        img.alt = "";
+        img.id = "avatar-img";
+        existingInitials.replaceWith(img);
+      }
+
+      // Also update navbar avatar if present
+      const navAvatar = document.querySelector(".user-avatar");
+      if (navAvatar) navAvatar.src = photoUrl;
+      const navInitial = document.querySelector(".user-initial");
+      if (navInitial) navInitial.style.display = "none";
+      if (navAvatar) navAvatar.style.display = "";
+
+      showToast("Photo de profil mise à jour !");
+    } catch (err) {
+      console.error(err);
+      showToast("Erreur lors du téléchargement.", "error");
+    } finally {
+      spinner.remove();
+      fileInput.value = ""; // reset so same file can be re-selected
     }
   });
 }

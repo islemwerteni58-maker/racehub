@@ -11,11 +11,11 @@ const app = express();
 // --- Middlewares globaux ---
 app.use(cors({ origin: true, credentials: true }));
 app.use(cookieParser());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // --- API ---
-app.use("/api", require("./routes/auth"));      // Nouveau : auth register/login/logout
+app.use("/api", require("./routes/auth"));
 app.use("/api", require("./routes/home"));
 app.use("/api", require("./routes/session"));
 app.use("/api", require("./routes/users"));
