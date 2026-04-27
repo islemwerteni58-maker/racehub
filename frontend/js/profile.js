@@ -38,13 +38,13 @@
         <div class="profile-avatar-wrap" id="avatar-wrap" title="Changer la photo">
           ${u.photoUrl
             ? `<img src="${u.photoUrl}" alt="" id="avatar-img" />`
-            : `<div class="profile-avatar-initials" id="avatar-initials">${escapeHtml(initial)}</div>`
+            : `<div class="profile-avatar-initials" id="avatar-img">${escapeHtml(initial)}</div>`
           }
           <div class="profile-avatar-overlay">
             
             <span class="profile-avatar-overlay-text">Changer la photo</span>
           </div>
-          <input type="file" class="profile-avatar-input" id="avatar-file-input" accept="image/*" />
+          <input type="file" accept="image/*" class="profile-avatar-input" id="avatar-input" />
         </div>
         <div>
           <span class="role-badge">${u.role}</span>
@@ -66,14 +66,75 @@
   html += "</section>";
   main.innerHTML = html;
 
+  // Avatar upload — available for ALL roles
+  bindAvatarUpload(u.id);
+
   // Bind events
   if (u.role === "runner") bindRunnerEvents(u.id);
   if (u.role === "organizer") bindOrganizerEvents(u.id);
   if (u.role === "admin") bindAdminEvents();
-
-  // ── Avatar upload ──────────────────────────────────────────────────
-  bindAvatarUpload(u.id);
 })();
+
+// ============================================================
+// Avatar upload — partagé entre tous les rôles
+// ============================================================
+function bindAvatarUpload(userId) {
+  const wrap = document.getElementById("avatar-wrap");
+  const input = document.getElementById("avatar-input");
+  if (!wrap || !input) return;
+
+  wrap.addEventListener("click", () => input.click());
+
+  input.addEventListener("change", async () => {
+    const file = input.files[0];
+    if (!file) return;
+
+    // Show spinner
+    const spinner = document.createElement("div");
+    spinner.className = "avatar-upload-spinner";
+    spinner.innerHTML = '<div class="spinner"></div>';
+    wrap.appendChild(spinner);
+
+    try {
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error("Lecture du fichier impossible."));
+        reader.readAsDataURL(file);
+      });
+
+      const r = await fetch(`/api/users/${userId}/photo`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ photoDataUrl: dataUrl }),
+      });
+      if (!r.ok) {
+        const err = await r.json().catch(() => ({}));
+        throw new Error(err.error || "Erreur lors de l'upload.");
+      }
+      const { photoUrl } = await r.json();
+
+      // Update avatar in DOM without full reload
+      const imgEl = document.getElementById("avatar-img");
+      if (imgEl && imgEl.tagName === "IMG") {
+        imgEl.src = photoUrl;
+      } else if (imgEl) {
+        const newImg = document.createElement("img");
+        newImg.id = "avatar-img";
+        newImg.src = photoUrl;
+        newImg.alt = "";
+        imgEl.replaceWith(newImg);
+      }
+      showToast("Photo mise à jour !");
+    } catch (err) {
+      showToast(err.message || "Erreur lors de l'upload.", "error");
+    } finally {
+      spinner.remove();
+      input.value = "";
+    }
+  });
+}
 
 // ============================================================
 // Vue RUNNER — 
@@ -280,10 +341,21 @@ async function bindOrganizerEvents(userId) {
           ${buildCourseInputHtml(0)}
         </div>
 
+        <div style="display:flex;align-items:center;justify-content:space-between;margin:1.75rem 0 1rem">
+          <h4 style="font-family:'Anton',sans-serif;text-transform:uppercase;margin:0">Programme</h4>
+          <button type="button" class="btn btn-dark" id="add-programme-btn" style="padding:0.5rem 1rem;font-size:0.8rem">
+            + Ajouter un créneau
+          </button>
+        </div>
+
+        <div id="programme-container">
+          ${buildProgrammeInputHtml(0)}
+        </div>
+
         <p style="font-size:0.75rem;color:var(--grey-700);margin:1.25rem 0 1rem">
-           Votre événement sera <strong>en attente</strong> jusqu'à validation par un admin.
+           Votre événement sera <strong>en attente</strong> jusqu\'à validation par un admin.
         </p>
-        <button type="submit" class="btn btn-primary" style="width:100%">Soumettre l'événement</button>
+        <button type="submit" class="btn btn-primary" style="width:100%">Soumettre l\'événement</button>
       </form>
       `,
       async (form) => {
@@ -312,6 +384,17 @@ async function bindOrganizerEvents(userId) {
           throw new Error("Ajoutez au moins un parcours.");
         }
 
+        // Collect programme entries
+        const programmeBlocks = form.querySelectorAll(".programme-block");
+        const programme = [];
+        programmeBlocks.forEach((block) => {
+          const time = block.querySelector('[data-field="progTime"]')?.value?.trim();
+          const title = block.querySelector('[data-field="progTitle"]')?.value?.trim();
+          if (time && title) {
+            programme.push({ time, title });
+          }
+        });
+
         const body = {
           name: data.name,
           description: data.description,
@@ -321,7 +404,7 @@ async function bindOrganizerEvents(userId) {
           organizerId: userId,
           coverImageUrl: data.coverImageUrl || null,
           courses,
-          programme: [],
+          programme,
         };
         await API.post("/events", body);
         showToast("Événement soumis ! En attente de validation.");
@@ -339,11 +422,31 @@ async function bindOrganizerEvents(userId) {
       courseCount++;
     });
 
-    // Delegate remove buttons
+    // Delegate remove buttons — courses
     document.getElementById("courses-container")?.addEventListener("click", (e) => {
       if (e.target.classList.contains("remove-course-btn")) {
         const block = e.target.closest(".course-block");
         if (block && document.querySelectorAll(".course-block").length > 1) {
+          block.remove();
+        }
+      }
+    });
+
+    // Add programme button
+    let progCount = 1;
+    document.getElementById("add-programme-btn")?.addEventListener("click", () => {
+      const container = document.getElementById("programme-container");
+      const div = document.createElement("div");
+      div.innerHTML = buildProgrammeInputHtml(progCount);
+      container.appendChild(div.firstElementChild);
+      progCount++;
+    });
+
+    // Delegate remove buttons — programme
+    document.getElementById("programme-container")?.addEventListener("click", (e) => {
+      if (e.target.classList.contains("remove-prog-btn")) {
+        const block = e.target.closest(".programme-block");
+        if (block && document.querySelectorAll(".programme-block").length > 1) {
           block.remove();
         }
       }
@@ -377,6 +480,24 @@ function buildCourseInputHtml(index) {
           <label>D- (m)</label>
           <input data-field="elevationLossM" type="number" min="0" placeholder="850" />
         </div>
+      </div>
+    </div>
+  `;
+}
+
+function buildProgrammeInputHtml(index) {
+  return `
+    <div class="programme-block" style="border:2px solid var(--grey-200);padding:1rem 1.25rem;margin-bottom:0.5rem;display:grid;grid-template-columns:120px 1fr auto;gap:0.75rem;align-items:center">
+      <div class="form-group" style="margin:0">
+        ${index === 0 ? '<label style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;display:block;margin-bottom:0.35rem">Heure *</label>' : ''}
+        <input data-field="progTime" placeholder="08:30" style="width:100%;padding:0.65rem;border:2px solid var(--grey-200);font-family:inherit;font-size:0.9rem" />
+      </div>
+      <div class="form-group" style="margin:0">
+        ${index === 0 ? '<label style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;display:block;margin-bottom:0.35rem">Description *</label>' : ''}
+        <input data-field="progTitle" placeholder="Ex: Départ 10 km, Remise des prix…" style="width:100%;padding:0.65rem;border:2px solid var(--grey-200);font-family:inherit;font-size:0.9rem" />
+      </div>
+      <div style="padding-top:${index === 0 ? '1.5rem' : '0'}">
+        ${index > 0 ? `<button type="button" class="remove-prog-btn" style="font-size:1.25rem;color:var(--grey-400);cursor:pointer;background:none;border:none;line-height:1">×</button>` : '<div style="width:24px"></div>'}
       </div>
     </div>
   `;
@@ -502,90 +623,6 @@ function openFormModal(title, bodyHtml, onSubmit) {
       showToast(err.message || "Erreur lors de l'envoi", "error");
       submitBtn.disabled = false;
       submitBtn.textContent = "Soumettre l'événement";
-    }
-  });
-}
-
-// ============================================================
-// Avatar upload
-// ============================================================
-function bindAvatarUpload(userId) {
-  const wrap = document.getElementById("avatar-wrap");
-  const fileInput = document.getElementById("avatar-file-input");
-  if (!wrap || !fileInput) return;
-
-  // Clicking the wrap triggers the hidden file input
-  wrap.addEventListener("click", () => fileInput.click());
-
-  fileInput.addEventListener("change", async () => {
-    const file = fileInput.files[0];
-    if (!file) return;
-
-    // Validate type and size (max 5 MB)
-    if (!file.type.startsWith("image/")) {
-      showToast("Veuillez choisir une image.", "error");
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      showToast("L'image ne doit pas dépasser 5 Mo.", "error");
-      return;
-    }
-
-    // Show spinner inside the avatar wrap
-    const spinner = document.createElement("div");
-    spinner.className = "avatar-upload-spinner";
-    spinner.innerHTML = '<div class="spinner"></div>';
-    wrap.appendChild(spinner);
-
-    try {
-      // Convert to base64
-      const base64 = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result); // data:image/...;base64,...
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-
-      // Send to server
-      const r = await fetch(`/api/users/${userId}/photo`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ photoDataUrl: base64 }),
-      });
-      if (!r.ok) throw new Error("Erreur serveur");
-      const data = await r.json();
-
-      // Update avatar in the DOM without full reload
-      const photoUrl = data.photoUrl;
-      const existingImg = document.getElementById("avatar-img");
-      const existingInitials = document.getElementById("avatar-initials");
-
-      if (existingImg) {
-        existingImg.src = photoUrl;
-      } else if (existingInitials) {
-        // Replace initials div with an img
-        const img = document.createElement("img");
-        img.src = photoUrl;
-        img.alt = "";
-        img.id = "avatar-img";
-        existingInitials.replaceWith(img);
-      }
-
-      // Also update navbar avatar if present
-      const navAvatar = document.querySelector(".user-avatar");
-      if (navAvatar) navAvatar.src = photoUrl;
-      const navInitial = document.querySelector(".user-initial");
-      if (navInitial) navInitial.style.display = "none";
-      if (navAvatar) navAvatar.style.display = "";
-
-      showToast("Photo de profil mise à jour !");
-    } catch (err) {
-      console.error(err);
-      showToast("Erreur lors du téléchargement.", "error");
-    } finally {
-      spinner.remove();
-      fileInput.value = ""; // reset so same file can be re-selected
     }
   });
 }
